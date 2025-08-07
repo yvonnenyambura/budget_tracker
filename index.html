@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Budget Tracker</h1>
+
+        <form id="transaction form">
+        <input type="text" id="description" placeholder="Description"required/>
+        <input type="number" id="amount" placeholder="Amount" required/>
+        <input type="date" id="date"required/>
+        <select id="category" required>
+            <option value="category">Category</option>
+            <option value="income">Income</option>
+            <option value="food">Food</option>
+            <option value="transport">Transport</option>
+            <option value="shopping">Shopping</option>
+            <option value="others">Others</option>
+           </select>
+           <button type="submit">Add Transaction</button>
+           </form>
+
+<div class="filters">
+    <button onclick="filtertransactions('all')">All</button>
+    <button onclick="filtertransactions('income')">Income</button>
+    <button onclick="filtertransactions('expense')">Expenses</button>
+    <select id="filter category" oncharge="filterbycategory()">
+        <option value="all">All Categories</option>
+        <option value="all">Food</option>
+        <option value="all">Transport</option>
+        <option value="all">Shopping</option>
+        <option value="all">Others</option>
+    </select>
+    
+</div>
+
+
+
+    </div>
+
+    
+</body>
+</html>
