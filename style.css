@@ -1,0 +1,71 @@
+body {
+  background-color: #F3CFC6;
+}
+
+.sidebar {
+  height: 100vh;
+  width: 220px;
+  background-color: #2C3E50;
+  color: white;
+  position: fixed;
+  padding-top: 20px;
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 20px;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 20px;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.sidebar a:hover {
+  background-color: #34495E;
+  padding-left: 30px;
+}
+
+.result {
+  margin-left: 220px;
+  padding: 20px;
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  height: 100vh;           
+  gap: 40px;               
+}
+
+
+#pie-chart-legend {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  max-width: 300px;
+}
+
+#pie-chart-legend li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #333;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+
+
+  
+
+

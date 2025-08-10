@@ -1,47 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Tracker</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
 </head>
 <body>
-    <div class="container">
-        <h1>Budget Tracker</h1>
+  
+  <div class="sidebar">
+   <h2>Budget Tracker</h2> 
+   <a href="#">Dashboard</a>
+   <a href="#">Add Expenses</a>
+   <a href="#">View Expenses</a>
+   <a href="#">Savings</a>
+   <a href="#">Reports</a>
+   <a href="#">Log Out</a>
 
-        <form id="transaction form">
-        <input type="text" id="description" placeholder="Description"required/>
-        <input type="number" id="amount" placeholder="Amount" required/>
-        <input type="date" id="date"required/>
-        <select id="category" required>
-            <option value="category">Category</option>
-            <option value="income">Income</option>
-            <option value="food">Food</option>
-            <option value="transport">Transport</option>
-            <option value="shopping">Shopping</option>
-            <option value="others">Others</option>
-           </select>
-           <button type="submit">Add Transaction</button>
-           </form>
+  </div>
 
-<div class="filters">
-    <button onclick="filtertransactions('all')">All</button>
-    <button onclick="filtertransactions('income')">Income</button>
-    <button onclick="filtertransactions('expense')">Expenses</button>
-    <select id="filter category" oncharge="filterbycategory()">
-        <option value="all">All Categories</option>
-        <option value="all">Food</option>
-        <option value="all">Transport</option>
-        <option value="all">Shopping</option>
-        <option value="all">Others</option>
-    </select>
-    
-</div>
+  <div style="text-align: center;">
 
+    <h1>Welcome to Your Budget Tracker</h1>
+    <p>Track your expenses and savings easily and stay on top of your finances.</p>
+  </div>
 
+  <div class="result">
+    <div class="pie-chart-container"></div>
+    <canvas id="pie-chart" class="animate-pie-chart" width="400" height="400"></canvas>
 
-    </div>
+    <ul id="pie-chart-legend"></ul>
 
-    
+  </div>
+
+  <div id="tooltip" style="position: absolute;display: none;background: rgba(10, 4, 4, 0.7);color: white;padding: 5px 8px;border-radius: 4px;font-size: 14px;pointer-events: none;z-index: 1000;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+  
 </body>
 </html>
+
+
