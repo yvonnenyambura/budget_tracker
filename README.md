@@ -19,8 +19,3 @@ A simple web app to track your income and expenses, see your current balance, an
 - Cookies for data persistence
 - Font Awesome for icons
 - Chart.js for charts 
-
-
-
-   ```bash
-   git clone https://github.com/yourusername/budget-tracker.git
