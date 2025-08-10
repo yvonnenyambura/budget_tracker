@@ -1,112 +1,214 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const slices = [
-    {label: "Blue", size: 350, color: "blue"},
-    {label: "Yellow", size: 250, color: "yellow"},
-    {label: "Green", size: 250, color: "green"},
-    {label: "Orange", size: 150, color: "orange"},
-  ];
+  const balance = document.getElementById('balance');
+  const moneyPlus = document.getElementById('moneyPlus');
+  const moneyMinus = document.getElementById('moneyMinus');
+  const list = document.getElementById('list');
+  const form = document.getElementById('form');
+  const text = document.getElementById('text');
+  const amount = document.getElementById('amount');
+  const myChartCanvas = document.querySelector('.my-chart'); 
+  const detailsUl = document.querySelector('.details ul'); 
+  const tooltip = document.getElementById('tooltip');
 
-  const canvas = document.getElementById("pie-chart");
-  const ctx = canvas.getContext("2d");
-  const legend = document.getElementById("pie-chart-legend");
-  const tooltip = document.getElementById("tooltip");
-
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const radius = Math.min(centerX, centerY) - 10;
-
-  let hoveredSlice = null;
-
-  function drawPieChart() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const total = slices.reduce((acc, slice) => acc + slice.size, 0);
-    let startAngle = 0;
-
-    slices.forEach(slice => {
-      const angle = (slice.size / total) * 2 * Math.PI;
-      const midAngle = startAngle + angle / 2;
+  let transactions = [];
+  let myDoughnutChart = null; 
 
 
-      const offset = (slice === hoveredSlice) ? 15 : 0;
-      const offsetX = Math.cos(midAngle) * offset;
-      const offsetY = Math.sin(midAngle) * offset;
-
-      ctx.beginPath();
-      ctx.moveTo(centerX + offsetX, centerY + offsetY);
-      ctx.arc(centerX + offsetX, centerY + offsetY, radius, startAngle, startAngle + angle);
-      ctx.closePath();
-
-      ctx.fillStyle = slice.color;
-      ctx.fill();
-
-      slice.startAngle = startAngle;
-      slice.endAngle = startAngle + angle;
-
-      startAngle += angle;
-    });
-
-    updateLegend();
+  function setCookie(name, value, days) {
+    let date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
   }
 
-  function updateLegend() {
-    const total = slices.reduce((acc, slice) => acc + slice.size, 0);
-
-    legend.innerHTML = slices.map(slice => {
-      const percent = total ? ((slice.size / total) * 100).toFixed(2) : 0;
-      return `
-        <li class="legend-item">
-          <div class="legend-color" style="background-color:${slice.color}"></div>
-          <div>${slice.label}: $${slice.size} (${percent}%)</div>
-        </li>
-      `;
-    }).join('');
-  }
-
-  function getMousePos(evt) {
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top,
-    };
-  }
-
-  function isPointInSlice(x, y, slice) {
-    const dx = x - centerX;
-    const dy = y - centerY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist > radius) return false;
-
-    let angle = Math.atan2(dy, dx);
-    if (angle < 0) angle += 2 * Math.PI;
-
-    return angle >= slice.startAngle && angle <= slice.endAngle;
-  }
-
-  canvas.addEventListener("mousemove", evt => {
-    const pos = getMousePos(evt);
-    const newHovered = slices.find(slice => isPointInSlice(pos.x, pos.y, slice));
-
-    if (newHovered !== hoveredSlice) {
-      hoveredSlice = newHovered;
-      drawPieChart();
+  function getCookie(name) {
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    let prefix = name + "=";
+    for (let c of ca) {
+      while (c.charAt(0) === ' ') c = c.substring(1);
+      if (c.indexOf(prefix) === 0) {
+        return c.substring(prefix.length);
+      }
     }
+    return "";
+  }
 
-    if (hoveredSlice) {
-      tooltip.style.display = "block";
-      tooltip.textContent = `${hoveredSlice.label}: $${hoveredSlice.size}`;
-      tooltip.style.left = (evt.pageX + 10) + "px";
-      tooltip.style.top = (evt.pageY + 10) + "px";
+
+  function updateDOM() {
+    list.innerHTML = '';
+    if (transactions.length === 0) {
+      list.innerHTML = '<li>No Transaction</li>';
     } else {
-      tooltip.style.display = "none";
+      transactions.forEach(addTransactionToList);
     }
-  });
+    updateValues();
+    drawDoughnutChart();
 
-  canvas.addEventListener("mouseout", () => {
-    hoveredSlice = null;
-    drawPieChart();
-    tooltip.style.display = "none";
-  });
+    setCookie("transactions", JSON.stringify(transactions), 3650);
+  }
 
-  drawPieChart();
+  function addTransactionToList(transaction) {
+    const sign = transaction.amount < 0 ? '-' : '+';
+    const item = document.createElement('li');
+
+    item.classList.add(transaction.amount < 0 ? 'minus' : 'plus');
+    item.innerHTML = `
+      ${transaction.text} <span>${sign}$${Math.abs(transaction.amount).toFixed(2)}</span>
+      <button class="delete-btn" onclick="removeTransaction(${transaction.id})">x</button>
+    `;
+
+    list.appendChild(item);
+  }
+
+  window.removeTransaction = function(id) {
+    transactions = transactions.filter((transaction) => transaction.id !== id);
+    updateDOM();
+  };
+
+  function updateValues() {
+    const amounts = transactions.map((transaction) => transaction.amount);
+    const total = amounts.reduce((acc, item) => (acc += item), 0).toFixed(2);
+    const income = amounts.filter((item) => item > 0).reduce((acc, item) => (acc += item), 0).toFixed(2);
+    const expense = (amounts.filter((item) => item < 0).reduce((acc, item) => (acc += item), 0) * -1).toFixed(2);
+
+    balance.innerText = `$${total}`;
+    moneyPlus.innerText = `$${income}`;
+    moneyMinus.innerText = `$${expense}`;
+  }
+
+  function drawDoughnutChart() {
+    if (myDoughnutChart) {
+      myDoughnutChart.destroy();
+    }
+
+    const expenseCategories = transactions
+      .filter((t) => t.amount < 0)
+      .reduce((acc, t) => {
+        const category = t.text;
+        const amount = Math.abs(t.amount);
+        if (acc[category]) {
+          acc[category] += amount;
+        } else {
+          acc[category] = amount;
+        }
+        return acc;
+      }, {});
+
+    const labels = Object.keys(expenseCategories);
+    const data = Object.values(expenseCategories);
+    const colors = [
+      '#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6', '#34495e', '#1abc9c', '#e67e22'
+    ];
+
+    const ctx = myChartCanvas.getContext('2d');
+
+    if (data.length === 0) {
+      myDoughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['No Expenses'],
+          datasets: [{
+            data: [1],
+            backgroundColor: ['#bdc3c7'],
+            hoverBackgroundColor: ['#bdc3c7']
+          }]
+        },
+        options: {
+          cutout: '70%',
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          }
+        }
+      });
+     
+      detailsUl.innerHTML = '<li><span class="legend-color" style="background-color:#bdc3c7;"></span> No Expenses</li>';
+    } else {
+      myDoughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              data: data,
+              backgroundColor: colors.slice(0, labels.length),
+            },
+          ],
+        },
+        options: {
+          cutout: '70%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              enabled: false,
+              external: (context) => {
+                let tooltipEl = tooltip;
+                let dataPoint = context.tooltip.dataPoints[0];
+                if (!dataPoint) {
+                  tooltipEl.style.display = 'none';
+                  return;
+                }
+          tooltipEl.innerHTML = `<strong>${dataPoint.label}</strong>: ${dataPoint.formattedValue}`;
+          tooltipEl.style.display = 'block';
+         tooltipEl.style.left = context.event.x + 10 + 'px';
+         tooltipEl.style.top = context.event.y + 10 + 'px';
+       },
+     },
+   },
+ },
+  });
+      updateChartLegend(labels, colors, data);
+    }
+  }
+
+function updateChartLegend(labels, colors, data) {
+  detailsUl.innerHTML = '';
+  const total = data.reduce((sum, val) => sum + val, 0);
+
+ labels.forEach((label, index) => {
+    const li = document.createElement('li');
+    const percent = total > 0 ? ((data[index] / total) * 100).toFixed(1) : 0;
+      li.innerHTML = `
+        <span class="legend-color" style="background-color:${colors[index]};"></span>
+        <span class="legend-label">${label}: $${data[index].toFixed(2)} (${percent}%)</span>
+      `;
+      detailsUl.appendChild(li);
+    });
+  }
+
+  form.addEventListener('submit', addTransaction);
+
+  function addTransaction(e) {
+    e.preventDefault();
+
+    if (text.value.trim() === '' || amount.value.trim() === '') {
+      alert('Please add a description and amount');
+      return;
+    }
+
+    const transaction = {
+      id: generateID(),
+      text: text.value,
+      amount: +amount.value,
+    };
+
+    transactions.push(transaction);
+    updateDOM();
+
+    text.value = '';
+    amount.value = '';
+  }
+
+  function generateID() {
+    return Math.floor(Math.random() * 100000000);
+  }
+
+ 
+  let saved = getCookie("transactions");
+  if (saved) {
+    transactions = JSON.parse(saved);
+  }
+
+  updateDOM();
 });
