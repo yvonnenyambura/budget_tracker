@@ -9,9 +9,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const myChartCanvas = document.querySelector('.my-chart'); 
   const detailsUl = document.querySelector('.details ul'); 
   const tooltip = document.getElementById('tooltip');
+function addListHeader() {
+  const header = document.createElement('div');
+  header.classList.add('list-header');
+  header.innerHTML = `
+    <div class="category-header">Category</div>
+    <div class="amount-header">Amount</div>
+    <div class="delete-header">Delete</div>
+  `;
+  list.parentNode.insertBefore(header, list);
+}
+
+addListHeader();
+
 
   let transactions = [];
   let myDoughnutChart = null; 
+
+  const iconMap = {
+  "rent": "fa-house",
+  "groceries": "fa-basket-shopping",
+  "shopping": "fa-bag-shopping",
+  "salary": "fa-money-bill-wave",
+  "transport": "fa-bus",
+  "entertainment": "fa-film",
+  "utilities": "fa-lightbulb",
+};
+
+
+const iconColorMap = {
+  "rent": "#e74c3c",           
+  "groceries": "#27ae60",      
+  "shopping": "#f39c12",       
+  "salary": "#2980b9",         
+  "transport": "#8e44ad",      
+  "entertainment": "#d35400",  
+  "utilities": "#16a085",   
+};
+
+
 
 
   function setCookie(name, value, days) {
@@ -48,18 +84,33 @@ document.addEventListener("DOMContentLoaded", () => {
     setCookie("transactions", JSON.stringify(transactions), 3650);
   }
 
-  function addTransactionToList(transaction) {
-    const sign = transaction.amount < 0 ? '-' : '+';
-    const item = document.createElement('li');
+function addTransactionToList(transaction) {
+  const sign = transaction.amount < 0 ? '-' : '+';
+  const item = document.createElement('li');
 
-    item.classList.add(transaction.amount < 0 ? 'minus' : 'plus');
-    item.innerHTML = `
-      ${transaction.text} <span>${sign}$${Math.abs(transaction.amount).toFixed(2)}</span>
-      <button class="delete-btn" onclick="removeTransaction(${transaction.id})">x</button>
-    `;
+  const key = transaction.text.toLowerCase();
+  const iconClass = iconMap[key] || 'fa-question-circle';
+  const iconColor = iconColorMap[key] || '#000000';
 
-    list.appendChild(item);
-  }
+  item.classList.add(transaction.amount < 0 ? 'minus' : 'plus');
+
+  item.innerHTML = `
+    <div class="category" style="display:flex; align-items:center; flex:1;">
+      <i class="fa-solid ${iconClass}" style="color: ${iconColor}; margin-right: 5px;"></i>
+      ${transaction.text}
+    </div>
+    <div class="amount" style="flex:1; text-align:right;">
+      ${sign}Ksh ${Math.abs(transaction.amount).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+    </div>
+    <div class="delete" style="flex:0.5; text-align:center;">
+      <button class="delete-btn" onclick="removeTransaction(${transaction.id})">
+        <i class="fa-solid fa-trash" style="color: red;"></i>
+      </button>
+    </div>
+  `;
+
+  list.appendChild(item);
+}
 
   window.removeTransaction = function(id) {
     transactions = transactions.filter((transaction) => transaction.id !== id);
@@ -68,14 +119,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateValues() {
     const amounts = transactions.map((transaction) => transaction.amount);
-    const total = amounts.reduce((acc, item) => (acc += item), 0).toFixed(2);
-    const income = amounts.filter((item) => item > 0).reduce((acc, item) => (acc += item), 0).toFixed(2);
-    const expense = (amounts.filter((item) => item < 0).reduce((acc, item) => (acc += item), 0) * -1).toFixed(2);
+    const total = amounts.reduce((acc, item) => acc + item, 0);
+    const income = amounts.filter((item) => item > 0).reduce((acc, item) => acc + item, 0);
+    const expense = amounts.filter((item) => item < 0).reduce((acc, item) => acc + item, 0) * -1;
 
-    balance.innerText = `$${total}`;
-    moneyPlus.innerText = `$${income}`;
-    moneyMinus.innerText = `$${expense}`;
-  }
+    balance.innerText = `Ksh ${total.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    moneyPlus.innerText = `Ksh ${income.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    moneyMinus.innerText = `Ksh ${expense.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
 
   function drawDoughnutChart() {
     if (myDoughnutChart) {
@@ -170,8 +222,9 @@ function updateChartLegend(labels, colors, data) {
     const li = document.createElement('li');
     const percent = total > 0 ? ((data[index] / total) * 100).toFixed(1) : 0;
       li.innerHTML = `
-        <span class="legend-color" style="background-color:${colors[index]};"></span>
-        <span class="legend-label">${label}: $${data[index].toFixed(2)} (${percent}%)</span>
+<span class="legend-color" style="background-color:${colors[index]};"></span>
+<span class="legend-label">${label}: Ksh ${data[index].toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${percent}%)</span>
+
       `;
       detailsUl.appendChild(li);
     });
@@ -190,7 +243,7 @@ function updateChartLegend(labels, colors, data) {
     const transaction = {
       id: generateID(),
       text: text.value,
-      amount: +amount.value,
+      amount: parseFloat(amount.value),
     };
 
     transactions.push(transaction);
