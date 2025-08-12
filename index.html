@@ -5,18 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Budget Tracker</title>
   <link rel="stylesheet" href="style.css" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
+  <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
 <body>
   <div class="sidebar">
     <h2 style="font-size: medium; text-align: center;"><i class="fas fa-user"></i> <br> <br>Mary Esther</h2>
     <a href="#">Dashboard</a>
-    <a href="#">Add Expenses</a>
-    <a href="#">View Expenses</a>
-    <a href="#">Savings</a>
+    <a href="#">Balance</a>
+    <a href="#">Transaction History</a>
+    <a href="#">Add Transactions</a>
     <a href="#">Reports</a>
     <a href="#">Log Out</a>
   </div>
@@ -38,7 +35,7 @@
     </div>
     
     <div class="result">
-      <div class="balance">
+       <div class="balance">
         <h3>Your Balance</h3>
         <h1 id="balance">Ksh0.00</h1>
         <div class="incomeExpense">
@@ -52,7 +49,16 @@
           </div>
         </div>
       </div>
+      
       <h3>Transaction History</h3>
+<div class="container">
+  <div class="filter-controls">
+        <button class="filter-btn active" data-filter="all">Show All</button>
+        <button class="filter-btn active" data-filter="income">Income</button>
+        <button class="filter-btn active" data-filter="expense">Expenses</button>
+</div>
+      </div>
+     
 
 
       <ul id="list" class="list">
@@ -105,6 +111,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
+  <script src="chart.js"></script>
 </body>
 </html>
 

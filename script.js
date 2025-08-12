@@ -1,27 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
+
   const balance = document.getElementById('balance');
   const moneyPlus = document.getElementById('moneyPlus');
   const moneyMinus = document.getElementById('moneyMinus');
   const list = document.getElementById('list');
+  const filterButtons = document.querySelectorAll(`.filter-btn`);
   const form = document.getElementById('form');
   const text = document.getElementById('text');
   const amount = document.getElementById('amount');
   const myChartCanvas = document.querySelector('.my-chart'); 
   const detailsUl = document.querySelector('.details ul'); 
   const tooltip = document.getElementById('tooltip');
+
 function addListHeader() {
   const header = document.createElement('div');
   header.classList.add('list-header');
   header.innerHTML = `
     <div class="category-header">Category</div>
     <div class="amount-header">Amount</div>
-    <div class="delete-header">Delete</div>
-  `;
+    <div class="delete-header">Delete</div>`;
+
   list.parentNode.insertBefore(header, list);
 }
 
 addListHeader();
 
+// transactions data
 
   let transactions = [];
   let myDoughnutChart = null; 
@@ -33,9 +37,9 @@ addListHeader();
   "salary": "fa-money-bill-wave",
   "transport": "fa-bus",
   "entertainment": "fa-film",
-  "utilities": "fa-lightbulb",
+  "emergency": "fa-triangle-exclamation",
+  "income": "fa-briefcase"
 };
-
 
 const iconColorMap = {
   "rent": "#e74c3c",           
@@ -44,10 +48,9 @@ const iconColorMap = {
   "salary": "#2980b9",         
   "transport": "#8e44ad",      
   "entertainment": "#d35400",  
-  "utilities": "#16a085",   
+  "emergency": "#e74c3c",  
+   "income": "#2980b9"
 };
-
-
 
 
   function setCookie(name, value, days) {
@@ -70,7 +73,10 @@ const iconColorMap = {
     return "";
   }
 
-
+function saveTransaction() {
+  setCookie("transactions", JSON.stringify(transactions), 3650);
+}
+  
   function updateDOM() {
     list.innerHTML = '';
     if (transactions.length === 0) {
@@ -81,7 +87,6 @@ const iconColorMap = {
     updateValues();
     drawDoughnutChart();
 
-    setCookie("transactions", JSON.stringify(transactions), 3650);
   }
 
 function addTransactionToList(transaction) {
@@ -114,6 +119,7 @@ function addTransactionToList(transaction) {
 
   window.removeTransaction = function(id) {
     transactions = transactions.filter((transaction) => transaction.id !== id);
+    saveTransaction();
     updateDOM();
   };
 
@@ -159,19 +165,18 @@ function addTransactionToList(transaction) {
       myDoughnutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: ['No Expenses'],
+       labels: ['No Expenses'],
           datasets: [{
-            data: [1],
-            backgroundColor: ['#bdc3c7'],
-            hoverBackgroundColor: ['#bdc3c7']
-          }]
-        },
-        options: {
-          cutout: '70%',
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: false }
-          }
+  data: [1],
+  backgroundColor: ['#bdc3c7'],
+  hoverBackgroundColor: ['#bdc3c7']
+         }]
+        }, options: {
+ cutout: '70%',
+  plugins: {
+ legend: { display: false },
+  tooltip: { enabled: false }
+ }
         }
       });
      
@@ -181,30 +186,27 @@ function addTransactionToList(transaction) {
         type: 'doughnut',
         data: {
           labels: labels,
-          datasets: [
-            {
-              data: data,
-              backgroundColor: colors.slice(0, labels.length),
-            },
-          ],
-        },
-        options: {
+ datasets: [
+       {
+     data: data,
+   backgroundColor: colors.slice(0, labels.length),
+    },
+    ],
+   },
+  options: {
           cutout: '70%',
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              enabled: false,
-              external: (context) => {
-                let tooltipEl = tooltip;
-                let dataPoint = context.tooltip.dataPoints[0];
-                if (!dataPoint) {
-                  tooltipEl.style.display = 'none';
-                  return;
-                }
-          tooltipEl.innerHTML = `<strong>${dataPoint.label}</strong>: ${dataPoint.formattedValue}`;
-          tooltipEl.style.display = 'block';
-         tooltipEl.style.left = context.event.x + 10 + 'px';
-         tooltipEl.style.top = context.event.y + 10 + 'px';
+  plugins: {
+    legend: { display: false },
+   tooltip: {
+  enabled: false,
+      external: (context) => {
+      let tooltipEl = tooltip;
+      let dataPoint = context.tooltip.dataPoints[0];
+     if (!dataPoint) {tooltipEl.style.display = 'none';return;}
+    tooltipEl.innerHTML = `<strong>${dataPoint.label}</strong>: ${dataPoint.formattedValue}`;
+    tooltipEl.style.display = 'block';
+   tooltipEl.style.left = context.event.x + 10 + 'px';
+  tooltipEl.style.top = context.event.y + 10 + 'px';
        },
      },
    },
@@ -214,6 +216,8 @@ function addTransactionToList(transaction) {
     }
   }
 
+  // updating the data beside the chart
+
 function updateChartLegend(labels, colors, data) {
   detailsUl.innerHTML = '';
   const total = data.reduce((sum, val) => sum + val, 0);
@@ -221,14 +225,13 @@ function updateChartLegend(labels, colors, data) {
  labels.forEach((label, index) => {
     const li = document.createElement('li');
     const percent = total > 0 ? ((data[index] / total) * 100).toFixed(1) : 0;
-      li.innerHTML = `
-<span class="legend-color" style="background-color:${colors[index]};"></span>
-<span class="legend-label">${label}: Ksh ${data[index].toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${percent}%)</span>
-
-      `;
+      li.innerHTML = `<span class="legend-color" style="background-color:${colors[index]};"></span>
+<span class="legend-label">${label}: Ksh ${data[index].toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${percent}%)</span>`;
       detailsUl.appendChild(li);
     });
   }
+
+  // adding transactions
 
   form.addEventListener('submit', addTransaction);
 
@@ -247,20 +250,27 @@ function updateChartLegend(labels, colors, data) {
     };
 
     transactions.push(transaction);
+    saveTransaction();
     updateDOM();
 
     text.value = '';
     amount.value = '';
   }
 
+  // id for each transaction
+
   function generateID() {
     return Math.floor(Math.random() * 100000000);
   }
 
- 
+//  loading the transaction that has been saved
   let saved = getCookie("transactions");
   if (saved) {
+    try {
     transactions = JSON.parse(saved);
+  } catch (e) {
+    transactions = [];
+  }
   }
 
   updateDOM();
