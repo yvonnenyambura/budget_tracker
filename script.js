@@ -264,6 +264,7 @@ function updateChartLegend(labels, colors, data) {
   }
 
 //  loading the transaction that has been saved
+
   let saved = getCookie("transactions");
   if (saved) {
     try {

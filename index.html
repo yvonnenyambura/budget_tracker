@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Budget Tracker</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 </head>
 <body>
   <div class="sidebar">
-    <h2 style="font-size: medium; text-align: center;"><i class="fas fa-user"></i> <br> <br>Mary Esther</h2>
-    <a href="#">Dashboard</a>
-    <a href="#">Balance</a>
-    <a href="#">Transaction History</a>
-    <a href="#">Add Transactions</a>
-    <a href="#">Reports</a>
-    <a href="#">Log Out</a>
+    <h2 style="font-size: medium; text-align: center;"><i class="fas fa-user" style="color: white;"></i> <br> <br>User - Mary Esther</h2>
+    <a href="#dashboard-section" style="color: white;">Dashboard</a>
+    <a href="#balance-section" style="color: white;">Balance</a>
+    <a href="#transactions-section" style="color: white;">Transaction History</a>
+    <a href="#add-transactions-section" style="color: white;">Add Transactions</a>
   </div>
 
-  <div class="main-content">
+  <div class="main-content" id="dashboard-section">
     <div style="text-align: center; width: 100%; max-width: 900px; margin-bottom: 20px;">
       <h1>ForMeWallet</h1>
       <p>Track your expenses and savings easily and stay on top of your finances.</p>
@@ -34,7 +32,7 @@
       </div>
     </div>
     
-    <div class="result">
+    <div class="result" id="balance-section">
        <div class="balance">
         <h3>Your Balance</h3>
         <h1 id="balance">Ksh0.00</h1>
@@ -49,7 +47,9 @@
           </div>
         </div>
       </div>
-      
+     
+     
+      <div id="transactions-section">
       <h3>Transaction History</h3>
 <div class="container">
   <div class="filter-controls">
@@ -58,45 +58,31 @@
         <button class="filter-btn active" data-filter="expense">Expenses</button>
 </div>
       </div>
-     
-
 
       <ul id="list" class="list">
         <li>No Transaction</li>
       </ul>
-
+</div>
+    <div id="add-transactions-section">
       <h3>Add New Transaction</h3>
       <form id="form">
         <div class="formControl">
           <label for="text">Name</label>
-          <input
-            type="text"
-            placeholder="Enter description"
-            id="text"
-            required
-            autocomplete="off"
-          />
-        </div>
+          <input type="text" placeholder="Enter description" id="text" required autocomplete="off"/></div>
         <div class="formControl">
           <label for="amount">Amount</label>
-          <input
-            type="number"
-            placeholder="Enter amount"
-            id="amount"
-            required
-            autocomplete="off"
-          />
+          <input type="number" placeholder="Enter amount" id="amount" required autocomplete="off"/>
           <label>(positive + income | negative - expense)</label>
         </div>
         <button class="btn" type="submit">Add Transaction</button>
       </form>
     </div>
-  </div>
+  
 
   <div
-    id="tooltip"
+    id="tooltip" 
     style="
-      position: absolute;
+   position: absolute;
       display: none;
       background: rgba(44, 62, 80, 0.9);
       color: white;
@@ -105,13 +91,32 @@
       font-size: 14px;
       pointer-events: none;
       z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    "
-  ></div>
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
   <script src="chart.js"></script>
 </body>
+
+
+<footer style="background-color: #2c3e50; color: white; padding: 20px; text-align: center; font-size: 14px; margin-top: 40px;">
+ 
+  <div style="margin-bottom: 15px;">
+    <a href="#dashboard-section" style="color: white; margin: 0 10px; text-decoration: none;">Dashboard</a>|
+    <a href="#balance-section" style="color: white; margin: 0 10px; text-decoration: none;">My Balance</a>|
+    <a href="#transactions-section" style="color: white; margin: 0 10px; text-decoration: none;">Transaction History</a>
+  </div>
+
+
+  <div style="margin-bottom: 15px;">
+    <a href="https://facebook.com" style="color: white; margin: 0 10px; font-size: 20px;"><i class="fab fa-facebook"></i></a>
+    <a href="https://twitter.com" style="color: white; margin: 0 10px; font-size: 20px;"><i class="fab fa-twitter"></i></a>
+    <a href="https://instagram.com" style="color: white; margin: 0 10px; font-size: 20px;"><i class="fab fa-instagram"></i></a>
+    <a href="https://linkedin.com" style="color: white; margin: 0 10px; font-size: 20px;"><i class="fab fa-linkedin"></i></a>
+  </div>
+
+  <div>&copy; 2025 ForMe Wallet | All Rights Reserved</div>
+</footer>
+
 </html>
 
